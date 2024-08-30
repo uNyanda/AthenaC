@@ -8,10 +8,11 @@ enum {
   /* Identifiers and literals */
   IDENTIFIER,
   INTEGER,
+  OCTAL,
+  HEX,
   FLOAT,
   STRING,
   CHAR,
-  HEX,
 
   /* Operators */
   PLUS,
@@ -57,11 +58,9 @@ enum {
   ARROW,
 
   /* Other */
-  BRACKET,
   PUNCTUATION,
   COMPARISON,
   LOGICAL,
-  SHIFT,
   PREPROCESSOR,
   COMMENT,
   NEWLINE,

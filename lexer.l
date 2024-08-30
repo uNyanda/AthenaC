@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "tokens.h" // Header file for token definitions
+#include "tokens.h" /* Header file for token definitions */
 
 void yyerror(const char *s);
 int token_count = 0;
@@ -35,9 +35,12 @@ char *string_buf_ptr;
 
 [a-zA-Z_][a-zA-Z0-9_]* { printf("IDENTIFIER: %s\n", yytext); token_count++; return IDENTIFIER; }
 
-[0-9]+                 { printf("INTEGER: %s\n", yytext); token_count++; return INTEGER; }
-[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?  { printf("FLOAT: %s\n", yytext); token_count++; return FLOAT; }
+[1-9][0-9]*            { printf("INTEGER: %s\n", yytext); token_count++; return INTEGER; }
+0[0-7]*                { printf("OCTAL: %s\n", yytext); token_count++; return OCTAL; }
 0[xX][0-9a-fA-F]+      { printf("HEX: %s\n", yytext); token_count++; return HEX; }
+
+[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?  { printf("FLOAT: %s\n", yytext); token_count++; return FLOAT; }
+[0-9]+\.[0-9]*([eE][-+]?[0-9]+)?  { printf("FLOAT: %s\n", yytext); token_count++; return FLOAT; }
 
 \"                     { string_buf_ptr = string_buffer; BEGIN(STRING_STATE); }
 <STRING_STATE>\"       { 
@@ -75,11 +78,16 @@ char *string_buf_ptr;
 "++"|"--"             { printf("INCREMENT: %s\n", yytext); token_count++; return INCREMENT; }
 "&&"|"||"             { printf("LOGICAL: %s\n", yytext); token_count++; return LOGICAL; }
 "=="|"!="|"<"|">"|"<="|">=" { printf("COMPARISON: %s\n", yytext); token_count++; return COMPARISON; }
-"<<"|">>"             { printf("SHIFT: %s\n", yytext); token_count++; return SHIFT; }
-[=+\-*/%&|^~]          { printf("OPERATOR: %s\n", yytext); token_count++; return OPERATOR; }
+"<<"                  { printf("LEFT_SHIFT: %s\n", yytext); token_count++; return LEFT_SHIFT; }
+">>"                  { printf("RIGHT_SHIFT: %s\n", yytext); token_count++; return RIGHT_SHIFT; }
+"="                   { printf("ASSIGN: %s\n", yytext); token_count++; return ASSIGN; }
+[+\-*/%&|^~]          { printf("OPERATOR: %s\n", yytext); token_count++; return OPERATOR; }
 
-"{"|"}"|"("|")"|"["|"]" { printf("BRACKET: %s\n", yytext); token_count++; return BRACKET; }
-";"|","|"."|"->"      { printf("PUNCTUATION: %s\n", yytext); token_count++; return PUNCTUATION; }
+"{"|"}"               { printf("BRACE: %s\n", yytext); token_count++; return yytext[0] == '{' ? LEFT_BRACE : RIGHT_BRACE; }
+"("|")"               { printf("PAREN: %s\n", yytext); token_count++; return yytext[0] == '(' ? LEFT_PAREN : RIGHT_PAREN; }
+"["|"]"               { printf("BRACKET: %s\n", yytext); token_count++; return yytext[0] == '[' ? LEFT_BRACKET : RIGHT_BRACKET; }
+";"|","|"."           { printf("PUNCTUATION: %s\n", yytext); token_count++; return PUNCTUATION; }
+"->"                  { printf("ARROW: %s\n", yytext); token_count++; return ARROW; }
 
 \n                    { line_number++; return NEWLINE; }
 [ \t\r\f]+            { /* Ignore whitespace */ }
